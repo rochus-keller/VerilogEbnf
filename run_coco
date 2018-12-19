@@ -1,0 +1,9 @@
+../Coco/Coco ./syntax/Verilog05_syntax.atg -trace FP -o ./parser -namespace Coco > ./parser/coco_out.txt
+
+mv ./syntax/trace.txt ./parser
+
+cp ./parser/Parser.h ../Verilog/CocoParser.h
+cp ./parser/Parser.cpp ../Verilog/CocoParser.cpp
+
+cp ./syntax/VlSynTree.h ../Verilog
+cp ./syntax/VlSynTree.cpp ../Verilog
