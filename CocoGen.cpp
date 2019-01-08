@@ -266,6 +266,8 @@ void CocoGen::generateAstHeaderBody(const QString& atgPath, const CocoGen::Selec
 
     hout << "\t\t" << "enum ParserRule {" << endl;
     hout << "\t\t\t" << "R_First = Tok_Eof + 1," << endl;
+    hout << "\t\t\t" << "R_Attribute," << endl;
+    hout << "\t\t\t" << "R_MacroUsage," << endl;
     DefSort::const_iterator i;
     for( i = sort.begin(); i != sort.end(); ++i )
     {
@@ -301,11 +303,14 @@ void CocoGen::generateAstHeaderBody(const QString& atgPath, const CocoGen::Selec
     bout << "\t" << "d_tok.d_lineNr = t.d_lineNr;" << endl;
     bout << "\t" << "d_tok.d_colNr = t.d_colNr;" << endl;
     bout << "\t" << "d_tok.d_sourcePath = t.d_sourcePath;" << endl;
+    bout << "\t" << "d_tok.d_val = t.d_val;" << endl;
     bout << "}" << endl;
     bout << endl;
 
     bout << "const char* SynTree::rToStr( quint16 r ) {" << endl;
     bout << "\t" << "switch(r) {" << endl;
+    bout << "\t\tcase R_Attribute: return \"attribute_instance\";" << endl;
+    bout << "\t\tcase R_MacroUsage: return \"text_macro_usage\";" << endl;
     for( i = sort.begin(); i != sort.end(); ++i )
     {
         bout << "\t\tcase R_" << i.key()

@@ -379,7 +379,7 @@ static inline QString tokenC( quint8 t )
 
 void ParserGenerator::generateSlk(const QString& path, bool withHeader)
 {
-    // SLK http://www.slkpg.com/
+    // SLK http://www.slkpg2.com/
 
     // Unfinished. SLK supports [] and {} but no (). So at least partial conversion to BNF needed.
     QFile f(path);
