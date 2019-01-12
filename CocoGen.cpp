@@ -303,7 +303,7 @@ void CocoGen::generateAstHeaderBody(const QString& atgPath, const CocoGen::Selec
     bout << "\t" << "d_tok.d_lineNr = t.d_lineNr;" << endl;
     bout << "\t" << "d_tok.d_colNr = t.d_colNr;" << endl;
     bout << "\t" << "d_tok.d_sourcePath = t.d_sourcePath;" << endl;
-    bout << "\t" << "d_tok.d_val = t.d_val;" << endl;
+    // don't copy: bout << "\t" << "d_tok.d_val = t.d_val;" << endl;
     bout << "}" << endl;
     bout << endl;
 

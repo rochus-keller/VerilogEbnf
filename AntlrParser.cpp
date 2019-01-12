@@ -208,7 +208,7 @@ struct GeContext
 {
     GeContext( QTextStream* in ):d_lex(in),d_curDef(0)
     {
-        for( int i = Tok_always; i <= Tok_xor; i++ )
+        for( int i = Tok_always; i < Tok_maxKeyword; i++ )
         {
             d_terminals[ QByteArray(tokenToString(i)).toUpper() ] = i;
         }

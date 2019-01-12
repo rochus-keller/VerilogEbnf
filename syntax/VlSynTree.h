@@ -10,6 +10,8 @@ namespace Vl {
 	struct SynTree {
 		enum ParserRule {
 			R_First = Tok_Eof + 1,
+			R_Attribute,
+			R_MacroUsage,
 			R_always_construct,
 			R_block_integer_declaration,
 			R_block_real_declaration,

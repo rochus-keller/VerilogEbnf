@@ -178,7 +178,7 @@ void Parser::Get() {
                         // else ignore
                     }else
                     {
-                        // reguläres Ende
+                        // regular end
                         d_next = t;
                         deliverToParser = true;
                         break;
@@ -201,11 +201,11 @@ void Parser::Get() {
                     Vl::Token t = scanner->nextToken();
                     if( t.d_type == Vl::Tok_Ratt )
                     {
-                        // reguläres Ende
+                        // regular end
                         break;
                     }else if( t.d_type == Vl::Tok_Eof || t.d_type == Vl::Tok_Latt )
                     {
-                        // irreguläres Ende
+                        // irregular end
                         d_cur = d_next;
                         SemErr("non-terminated attribute");
                         break;
@@ -399,9 +399,9 @@ void Errors::SynErr(const QString& sourcePath, int line, int col, int n, Vl::Err
 		ctxStr = QString( " in %1" ).arg(ctx);
     if( n == 0 )
         s = QString("EOF expected%1").arg(ctxStr);
-    else if( n <= Vl::Tok_NoChange )
+    else if( n < Vl::Tok_maxSystemName )
         s = QString("'%2' expected%1").arg(ctxStr).arg(Vl::tokenToString(n));
-    else if( n <= Vl::Tok_Attribute )
+    else if( n <= Vl::Tok_Eof )
         s = QString("%2 expected%1").arg(ctxStr).arg(Vl::tokenToString(n));
     else
 	switch (n) {

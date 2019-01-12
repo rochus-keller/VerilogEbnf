@@ -37,6 +37,10 @@
 // 07.05.2018 added translation_unit to handle both source and libraries with the same lexer/parser
 
 
+// NOTE: this file uses [! ... !] for grouping (start/end-group-symbol in ISO 14977).
+// The original Verilog standard doesn't use grouping, which is unfortunate (see e.g. the original "generate_block").
+
+
 // A.1 Source text 
 
 translation_unit ::= 
@@ -859,7 +863,8 @@ loop_generate_construct ::=
 
   for ( genvar_initialization ; genvar_expression ; genvar_iteration ) 
 
-    generate_block 
+    [! generate_block | module_or_generate_item !]
+
 
 genvar_initialization ::= 
 
@@ -916,13 +921,16 @@ case_generate_item ::=
 
 generate_block ::= 
 
-   module_or_generate_item 
+   // verschoben nach generate_block_or_null und loop_generate_construct: module_or_generate_item 
+   // |
+   begin [ : generate_block_identifier ]  { module_or_generate_item } end 
 
-  | begin [ : generate_block_identifier ]  { module_or_generate_item } end 
 
 generate_block_or_null ::= 
 
    generate_block 
+   
+  | module_or_generate_item
 
   | ; 
 

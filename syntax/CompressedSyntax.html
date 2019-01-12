@@ -282,7 +282,7 @@ a[href^="#"]{text-decoration:none}</style>
 <dt><em><a name="list_of_genvar_identifiers">list_of_genvar_identifiers</a></em>&nbsp;:</dt>
 <dd><em><a href="#genvar_identifier">genvar_identifier</a></em> { <b>,</b> <em><a href="#genvar_identifier">genvar_identifier</a></em> } </dd><br>
 <dt><a name="loop_generate_construct">loop_generate_construct</a>&nbsp;:</dt>
-<dd><b>for</b> <b>(</b> <a href="#genvar_initialization">genvar_initialization</a> <b>;</b> <a href="#genvar_expression">genvar_expression</a> <b>;</b> <a href="#genvar_iteration">genvar_iteration</a> <b>)</b> <a href="#generate_block">generate_block</a> </dd><br>
+<dd><b>for</b> <b>(</b> <a href="#genvar_initialization">genvar_initialization</a> <b>;</b> <a href="#genvar_expression">genvar_expression</a> <b>;</b> <a href="#genvar_iteration">genvar_iteration</a> <b>)</b> ( <a href="#generate_block">generate_block</a> | <em><a href="#module_or_generate_item">module_or_generate_item</a></em> ) </dd><br>
 <dt><a name="genvar_initialization">genvar_initialization</a>&nbsp;:</dt>
 <dd><em><a href="#genvar_identifier">genvar_identifier</a></em> <b>=</b> <a href="#constant_expression">constant_expression</a> </dd><br>
 <dt><a name="genvar_expression">genvar_expression</a>&nbsp;:</dt>
@@ -302,9 +302,9 @@ a[href^="#"]{text-decoration:none}</style>
 <dt><a name="case_generate_item">case_generate_item</a>&nbsp;:</dt>
 <dd><a href="#constant_expression">constant_expression</a> { <b>,</b> <a href="#constant_expression">constant_expression</a> } <b>:</b> <em><a href="#generate_block_or_null">generate_block_or_null</a></em> <br>   | <b>default</b> [ <b>:</b> ] <em><a href="#generate_block_or_null">generate_block_or_null</a></em> </dd><br>
 <dt><a name="generate_block">generate_block</a>&nbsp;:</dt>
-<dd><em><a href="#module_or_generate_item">module_or_generate_item</a></em> <br>   | <b>begin</b> [ <b>:</b> <em><a href="#generate_block_identifier">generate_block_identifier</a></em> ] { <em><a href="#module_or_generate_item">module_or_generate_item</a></em> } <b>end</b> </dd><br>
+<dd><b>begin</b> [ <b>:</b> <em><a href="#generate_block_identifier">generate_block_identifier</a></em> ] { <em><a href="#module_or_generate_item">module_or_generate_item</a></em> } <b>end</b> </dd><br>
 <dt><em><a name="generate_block_or_null">generate_block_or_null</a></em>&nbsp;:</dt>
-<dd><a href="#generate_block">generate_block</a> <br>   | <b>;</b> </dd><br>
+<dd><a href="#generate_block">generate_block</a> <br>   | <em><a href="#module_or_generate_item">module_or_generate_item</a></em> <br>   | <b>;</b> </dd><br>
 <dt><a name="udp_declaration">udp_declaration</a>&nbsp;:</dt>
 <dd><b>primitive</b> <em><a href="#udp_identifier">udp_identifier</a></em> <b>(</b> ( <a href="#udp_port_list">udp_port_list</a> | <a href="#udp_declaration_port_list">udp_declaration_port_list</a> ) <b>)</b> <b>;</b> { <em><a href="#udp_port_declaration">udp_port_declaration</a></em> } <a href="#udp_body">udp_body</a> <b>endprimitive</b> </dd><br>
 <dt><a name="udp_port_list">udp_port_list</a>&nbsp;:</dt>

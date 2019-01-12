@@ -10,6 +10,8 @@ SynTree::SynTree(quint16 r, const Token& t ):d_tok(r){
 
 const char* SynTree::rToStr( quint16 r ) {
 	switch(r) {
+		case R_Attribute: return "attribute_instance";
+		case R_MacroUsage: return "text_macro_usage";
 		case R_always_construct: return "always_construct";
 		case R_block_integer_declaration: return "block_integer_declaration";
 		case R_block_real_declaration: return "block_real_declaration";
