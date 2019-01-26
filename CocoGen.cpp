@@ -32,7 +32,7 @@ CocoGen::CocoGen(Syntax* syn, QObject *parent) : QObject(parent),d_syn(syn)
     Q_ASSERT( syn != 0 );
 }
 
-QString CocoGen::cocoNodeName( QString name )
+QString CocoGen::nodeName( QString name )
 {
     if( name.startsWith( QChar('$')))
         name = QLatin1String("dlr_") + name.mid(1);
@@ -260,7 +260,7 @@ void CocoGen::generateAstHeaderBody(const QString& atgPath, const CocoGen::Selec
             qDebug() << "Skipped" << d->d_name << "from AST";
             continue;
         }
-        sort.insert( cocoNodeName( d->d_name ), d );
+        sort.insert( nodeName( d->d_name ), d );
         sel2.insert(d);
     }
 
@@ -445,7 +445,7 @@ void CocoGen::writeNode( QTextStream& out, Syntax::Node* node, bool topLevel, bo
             out << "(. addTermianl(); .) ";
         break;
     case Syntax::Node::DefRef:
-        out << cocoNodeName(node->d_name) << " ";
+        out << nodeName(node->d_name) << " ";
         break;
     case Syntax::Node::Alternative:
         for( int i = 0; i < node->d_subs.size(); i++ )
@@ -487,26 +487,26 @@ void CocoGen::writeNode( QTextStream& out, Syntax::Node* node, bool topLevel, bo
     }
 }
 
-void CocoGen::findAllUsedProductions( Syntax::Node* node, Selection& selection )
+void CocoGen::findAllUsedProductions( Syntax* syn, Syntax::Node* node, Selection& selection )
 {
     if( node == 0 )
         return;
     if( node->d_type == Syntax::Node::DefRef )
     {
-        const Syntax::Definition* ref = d_syn->getDef( node->d_name );
+        const Syntax::Definition* ref = syn->getDef( node->d_name );
         if( ref )
         {
             if( !selection.contains(ref) )
             {
                 selection.insert(ref);
-                findAllUsedProductions( ref->d_node, selection );
+                findAllUsedProductions( syn, ref->d_node, selection );
             }
         }else
             qWarning() << "Category not found:" << node->d_name;
     }else if( node->d_type == Syntax::Node::Sequence || node->d_type == Syntax::Node::Alternative )
     {
         foreach( Syntax::Node* sub, node->d_subs )
-            findAllUsedProductions( sub, selection );
+            findAllUsedProductions( syn, sub, selection );
     }
 }
 
@@ -602,7 +602,7 @@ void CocoGen::generateCoco(const QString& path, bool buildAst)
     if( root )
     {
         selection.insert(root);
-        findAllUsedProductions( root->d_node, selection );
+        findAllUsedProductions( d_syn, root->d_node, selection );
     }
 
     QFile f(path);
@@ -668,10 +668,10 @@ void CocoGen::generateCoco(const QString& path, bool buildAst)
         if( d->d_node == 0 || !selection.contains(d) )
             continue;
         //qDebug() << "selected:" << d->d_name;
-        out << cocoNodeName( d->d_name ) << " = " << endl << "    ";
+        out << nodeName( d->d_name ) << " = " << endl << "    ";
         const bool skip = checkSkipFromAst(d);
         if( buildAst && !skip )
-            out << "(. Vl::SynTree* n = new Vl::SynTree( Vl::SynTree::R_" << cocoNodeName( d->d_name ) <<
+            out << "(. Vl::SynTree* n = new Vl::SynTree( Vl::SynTree::R_" << nodeName( d->d_name ) <<
                    ", d_next ); d_stack.top()->d_children.append(n); d_stack.push(n); .) ( ";
         writeNode( out, d->d_node, true, buildAst );
 

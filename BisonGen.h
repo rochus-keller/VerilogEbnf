@@ -1,8 +1,8 @@
-#ifndef ADAPARSERGENERATOR_H
-#define ADAPARSERGENERATOR_H
+#ifndef BISONGEN_H
+#define BISONGEN_H
 
 /*
-* Copyright 2018 Rochus Keller <mailto:me@rochus-keller.ch>
+* Copyright 2019 Rochus Keller <mailto:me@rochus-keller.ch>
 *
 * This file is part of the VerilogEbnf application.
 *
@@ -21,25 +21,26 @@
 */
 
 #include <QObject>
+#include <QSet>
 #include "Syntax.h"
 
 namespace Vl
 {
-	class ParserGenerator : public QObject
-	{
-	public:
+    class BisonGen : public QObject
+    {
+    public:
+        explicit BisonGen(Syntax* syn,QObject *parent = 0);
 
-		explicit ParserGenerator(Syntax* syn, QObject *parent = 0);
-		void generateAntlr( const QString& path, bool withHeader = false );
-        void generatePccts( const QString& path, bool withHeader = false );
-        void generateBison( const QString& path, bool withHeader = false );
-        void generateSlk( const QString& path, bool withHeader = false );
-        void generatePeg( const QString& path, bool withHeader = false );
-        static QString format( const Syntax::Definition&, bool antlr = false );
-		bool generateLevelList( const QString& path );
-	private:
-		Syntax* d_syn;
-	};
+        void generate(const QString& path , bool buildAst = true);
+
+    protected:
+        typedef QSet<const Syntax::Definition*> Selection;
+        static QString tokenDef( quint8 );
+        static void writeNode( QTextStream& out, Syntax::Node* node, const QString& name );
+
+    private:
+        Syntax* d_syn;
+    };
 }
 
-#endif // ADAPARSERGENERATOR_H
+#endif // BISONGEN_H

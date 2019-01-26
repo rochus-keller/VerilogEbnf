@@ -20,6 +20,7 @@
 #include "EbnfParser.h"
 #include "ParserGenerator.h"
 #include "Syntax.h"
+#include "CocoGen.h"
 #include <Verilog/VlToken.h>
 #include <QFile>
 #include <QTextStream>
@@ -174,7 +175,7 @@ void ParserGenerator::generateAntlr(const QString &path, bool withHeader)
         //out << "udp_identifier : IDENT ;" << endl;
         //out << "module_identifier : IDENT ;" << endl;
 
-        out << "translation_unit: source_text EOF ;" << endl;
+        // out << "translation_unit: source_text EOF ;" << endl;
 
 		out << endl;
     }
@@ -209,6 +210,130 @@ void ParserGenerator::generateAntlr(const QString &path, bool withHeader)
         out2 << endl;
     }
 
+
+}
+
+static void writeNodePcct( QTextStream& out, Syntax::Node* node, bool topLevel )
+{
+    if( node == 0 )
+        return;
+    switch( node->d_quant )
+    {
+    case Syntax::Node::One:
+        if( !topLevel && node->d_type == Syntax::Node::Alternative )
+            out << "( ";
+        else if( !topLevel && node->d_type == Syntax::Node::Sequence && !node->d_name.isEmpty() )
+            out << "( ";
+        break;
+    case Syntax::Node::ZeroOrOne:
+        out << "{ ";
+        break;
+    case Syntax::Node::ZeroOrMore:
+    case Syntax::Node::OneOrMore:
+        out << "( ";
+        break;
+    }
+    switch( node->d_type )
+    {
+    case Syntax::Node::Terminal:
+        out << tokenG( node->d_lexTok ) << " ";
+        break;
+    case Syntax::Node::Literal:
+        out << "\'" << node->d_name << "\' ";
+        break;
+    case Syntax::Node::DefRef:
+        out << nodeNameG(node->d_name) << " ";
+        break;
+    case Syntax::Node::Alternative:
+        if( !node->d_name.isEmpty() ) // Annotation
+            out << "[" << node->d_name << "] ";
+        for( int i = 0; i < node->d_subs.size(); i++ )
+        {
+            if( i != 0 )
+            {
+                if( topLevel )
+                    out << endl << "    | ";
+                else
+                    out << "| ";
+            }
+            writeNodePcct( out, node->d_subs[i], false );
+        }
+        break;
+    case Syntax::Node::Sequence:
+        if( !node->d_name.isEmpty() ) // Annotation
+            out << "[" << node->d_name << "] ";
+        for( int i = 0; i < node->d_subs.size(); i++ )
+        {
+            writeNodePcct( out, node->d_subs[i], false );
+        }
+        break;
+    }
+    switch( node->d_quant )
+    {
+    case Syntax::Node::One:
+        if( !topLevel && node->d_type == Syntax::Node::Alternative )
+            out << ") ";
+        else if( !topLevel && node->d_type == Syntax::Node::Sequence && !node->d_name.isEmpty() )
+            out << ") ";
+        break;
+    case Syntax::Node::ZeroOrOne:
+        out << "} ";
+        break;
+    case Syntax::Node::ZeroOrMore:
+        out << ")* ";
+        break;
+    case Syntax::Node::OneOrMore:
+        out << ")+ ";
+        break;
+    }
+}
+
+void ParserGenerator::generatePccts(const QString& path, bool withHeader)
+{
+    QFile f(path);
+    f.open( QIODevice::WriteOnly );
+    QTextStream out(&f);
+    out.setCodec("Latin-1");
+
+    foreach( const QString& cmt, d_syn->getComments() )
+        out << "/* " << cmt << " */" << endl;
+    out << endl;
+
+    if( withHeader )
+    {
+        //out << "#header" << endl;
+
+        out << endl;
+    }
+
+    //out << "#parser Verilog05" << endl;
+
+    out << "#tokdefs \"Verilog05Tokens.h\"" << endl;
+
+
+    foreach( const Syntax::Definition* d, d_syn->getDefsInOrder() )
+    {
+        if( d == 0 || d->d_node == 0 )
+            continue;
+        out << nodeNameG(d->d_name) << /* ( (i.value()->d_visited)?" ! ":"" ) << */ " : " << endl << "    ";
+        writeNodePcct( out, d->d_node, true );
+        out << endl << "    ;" << endl << endl;
+    }
+
+    if( withHeader )
+    {
+        QFile f2( QFileInfo(path).absoluteDir().absoluteFilePath("Verilog05Tokens.h") );
+        f2.open( QIODevice::WriteOnly );
+        QTextStream out2(&f2);
+        out2.setCodec("Latin-1");
+        int t;
+        for( t = Tok_Plus; t < Tok_Comment; t++ )
+        {
+            out2 << "#define " << tokenG(t) << " " << t << endl;
+        }
+
+        out2 << endl;
+    }
 
 }
 
@@ -377,64 +502,130 @@ static inline QString tokenC( quint8 t )
         return tokenG( t );
 }
 
+static void writeNodeS( QTextStream& out, Syntax::Node* node, const QString& name )
+{
+    // Konvertiert EBNF in BNF
+    // see https://stackoverflow.com/questions/2466484/converting-ebnf-to-bnf
+    if( node == 0 )
+        return;
+
+    // Syntax::Node::One: einfach hinschreiben
+    // Syntax::Node::ZeroOrOne: option mit epsilon
+    // Syntax::Node::ZeroOrMore
+
+    const QString myName = name;
+
+    out << myName << " : " << endl << "    ";
+
+    switch( node->d_quant )
+    {
+    case Syntax::Node::ZeroOrOne:
+        out << "_epsilon_ " << endl << "    ";
+        break;
+    case Syntax::Node::ZeroOrMore:
+        out << "_epsilon_ " << endl << "    " << myName << " ";
+        break;
+    }
+
+    int number = 0;
+    QList< QPair<Syntax::Node*,QString> > denormalize;
+
+    switch( node->d_type )
+    {
+    case Syntax::Node::Terminal:
+        out << tokenG( node->d_lexTok ) << " ";
+        break;
+    case Syntax::Node::Literal:
+        out << "\'" << node->d_name << "\' ";
+        break;
+    case Syntax::Node::DefRef:
+        out << nodeNameG(node->d_name) << " ";
+        break;
+    case Syntax::Node::Alternative:
+    case Syntax::Node::Sequence:
+        for( int i = 0; i < node->d_subs.size(); i++ )
+        {
+            switch( node->d_subs[i]->d_type )
+            {
+            case Syntax::Node::Terminal:
+                if( node->d_subs[i]->d_quant != Syntax::Node::One )
+                {
+                    const QString newName = QString( "%1_%2").arg(name).arg(++number);
+                    out << newName << " ";
+                    denormalize.append( qMakePair(node->d_subs[i],newName) );
+                }else
+                    out << tokenG( node->d_subs[i]->d_lexTok ) << " ";
+                break;
+            case Syntax::Node::Literal:
+                if( node->d_subs[i]->d_quant != Syntax::Node::One )
+                {
+                    const QString newName = QString( "%1_%2").arg(name).arg(++number);
+                    out << newName << " ";
+                    denormalize.append( qMakePair(node->d_subs[i],newName) );
+                }else
+                    out << "\'" << node->d_subs[i]->d_name << "\' ";
+                break;
+            case Syntax::Node::DefRef:
+                if( node->d_subs[i]->d_quant != Syntax::Node::One )
+                {
+                    const QString newName = QString( "%1_%2").arg(name).arg(++number);
+                    out << newName << " ";
+                    denormalize.append( qMakePair(node->d_subs[i],newName) );
+                }else
+                    out << nodeNameG(node->d_subs[i]->d_name) << " ";
+                break;
+            case Syntax::Node::Alternative:
+            case Syntax::Node::Sequence:
+                {
+                    const QString newName = QString( "%1_%2").arg(name).arg(++number);
+                    out << newName << " ";
+                    denormalize.append( qMakePair(node->d_subs[i],newName) );
+                }
+                break;
+            }
+            if( node->d_type == Syntax::Node::Alternative && i < node->d_subs.size() - 1 )
+                out << endl << "    | ";
+        }
+    }
+
+    out << endl << endl;
+
+    for( int i = 0; i < denormalize.size(); i++ )
+    {
+        writeNodeS( out, denormalize[i].first, denormalize[i].second );
+    }
+
+}
+
 void ParserGenerator::generateSlk(const QString& path, bool withHeader)
 {
     // SLK http://www.slkpg2.com/
 
-    // Unfinished. SLK supports [] and {} but no (). So at least partial conversion to BNF needed.
+    CocoGen::Selection selection;
+    const Syntax::Definition* root = d_syn->getDef("translation_unit");
+    if( root )
+    {
+        selection.insert(root);
+        CocoGen::findAllUsedProductions( d_syn, root->d_node, selection );
+    }
+
     QFile f(path);
     f.open( QIODevice::WriteOnly );
     QTextStream out(&f);
     out.setCodec("Latin-1");
 
+    out << "/* This file was automatically generated by VerilogEbnf; don't modify it! */" << endl;
 
-    if( withHeader )
+    out << "Verilog05: translation_unit" << endl << endl;
+
+
+    foreach( const Syntax::Definition* d, d_syn->getDefsInOrder() )
     {
-        int t = 0;
-        for( t = Tok_Plus; t < Tok_Comment; t++ )
-        {
-            out << "  " << tokenC(t) << endl;
-        }
-//        out << "  OS " << endl;
-//        out << "  NS " << endl;
-//        out << "  LS " << endl;
-//        out << "  ES " << endl;
-//        out << "  FPS " << endl;
-//        out << "  ED " << endl;
-        out << endl;
-
-    }
-
-
-//    out << "output_symbol = OS ." << endl;
-//    out << "next_state = NS ." << endl;
-//    out << "level_symbol = LS ." << endl;
-//    out << "edge_symbol = ES ." << endl;
-//    out << "file_path_spec = FPS ." << endl;
-//    out << "edge_descriptor = ED ." << endl;
-    //out << "udp_identifier = IDENT ." << endl;
-    //out << "module_identifier = IDENT ." << endl;
-
-    out << endl;
-
-    out << "Verilog05 = source_text ." << endl;
-
-    out << endl;
-
-    Syntax::Definitions::const_iterator i;
-    for( i = d_syn->getDefs().begin(); i != d_syn->getDefs().end(); ++i )
-    {
-        if( i.key() == 0 || i.value()->d_node == 0 )
+        if( d->d_node == 0 || !selection.contains(d) )
             continue;
-        out << nodeNameG( i.value()->d_name ) << " = " << endl << "    ";
-        // TODO writeNodeC( out, i.value()->d_node, true, d_syn, false );
-        out << endl << "    ." << endl << endl;
+        writeNodeS( out, d->d_node, nodeNameG(d->d_name) );
     }
 
-    if( withHeader )
-    {
-        out << "END Verilog05 ." << endl;
-    }
 }
 
 static void writeNodeP( QTextStream& out, Syntax::Node* node, bool topLevel )

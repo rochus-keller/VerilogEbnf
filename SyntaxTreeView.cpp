@@ -25,6 +25,7 @@
 #include "ParserGenerator.h"
 #include "EbnfParser.h"
 #include "AntlrParser.h"
+#include "BisonGen.h"
 #include <Vhdl/Tokens.h>
 #include <QFile>
 #include <QTextStream>
@@ -283,6 +284,8 @@ SyntaxTreeView::SyntaxTreeView(QWidget *parent) :
     pop->addCommand( tr("Save ANTLR"), this, SLOT(onSaveAntlr()) );
     pop->addCommand( tr("Save Bison"), this, SLOT(onSaveBison()) );
     pop->addCommand( tr("Save PEG"), this, SLOT(onSavePeg()) );
+    pop->addCommand( tr("Save SLK"), this, SLOT(onSaveSlk()) );
+    pop->addCommand( tr("Save PCCTS"), this, SLOT(onSavePccts()) );
     pop->addCommand( tr("Reload"), this, SLOT(onReload()) );
 
 	connect( this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(onDoubleClicked(QTreeWidgetItem*,int)) );
@@ -644,9 +647,9 @@ void SyntaxTreeView::onSaveBison()
 {
     ENABLED_IF(true);
 
+    BisonGen gen( d_syn );
     QFileInfo info(d_path);
-    ParserGenerator pg( d_syn );
-    pg.generateBison( info.dir().absoluteFilePath( info.baseName() + ".yy"), true );
+    gen.generate( info.dir().absoluteFilePath( info.baseName() + ".yy"), false );
 }
 
 void SyntaxTreeView::onSavePeg()
@@ -656,4 +659,22 @@ void SyntaxTreeView::onSavePeg()
     QFileInfo info(d_path);
     ParserGenerator pg( d_syn );
     pg.generatePeg( info.dir().absoluteFilePath( info.baseName() + ".peg"), true );
+}
+
+void SyntaxTreeView::onSaveSlk()
+{
+    ENABLED_IF(true);
+
+    QFileInfo info(d_path);
+    ParserGenerator pg( d_syn );
+    pg.generateSlk( info.dir().absoluteFilePath( info.baseName() + ".slk"), true );
+}
+
+void SyntaxTreeView::onSavePccts()
+{
+    ENABLED_IF(true);
+
+    QFileInfo info(d_path);
+    ParserGenerator pg( d_syn );
+    pg.generatePccts( info.dir().absoluteFilePath( info.baseName() + ".g"), true );
 }

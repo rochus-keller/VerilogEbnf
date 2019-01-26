@@ -60,7 +60,9 @@ namespace Vl
         void onSaveCoco();
         void onSaveBison();
         void onSavePeg();
-	private:
+        void onSaveSlk();
+        void onSavePccts();
+    private:
 		Syntax* d_syn;
         SyntaxAnalyzer* d_ana;
 		QList<QTreeWidgetItem*> d_histo;

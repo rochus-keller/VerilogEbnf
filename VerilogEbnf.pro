@@ -34,7 +34,8 @@ SOURCES += main.cpp\
     SyntaxAnalyzer.cpp \
     SyntaxModifier.cpp \
     ParserGenerator.cpp \
-    CocoGen.cpp
+    CocoGen.cpp \
+    BisonGen.cpp
 
 HEADERS  += \
     Syntax.h \
@@ -44,7 +45,8 @@ HEADERS  += \
     SyntaxAnalyzer.h \
     SyntaxModifier.h \
     ParserGenerator.h \
-    CocoGen.h
+    CocoGen.h \
+    BisonGen.h
 
 include( ../Verilog/Verilog.pri );
 

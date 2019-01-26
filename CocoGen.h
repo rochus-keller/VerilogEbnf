@@ -29,18 +29,19 @@ namespace Vl
     class CocoGen : public QObject
     {
     public:
+        typedef QSet<const Syntax::Definition*> Selection;
+
         explicit CocoGen(Syntax* syn, QObject *parent = 0);
 
         void generateCoco(const QString& path , bool buildAst = true);
 
-    protected:
-        typedef QSet<const Syntax::Definition*> Selection;
-        static bool checkSkipFromAst( const Syntax::Definition* d );
         static bool isSimpleNode( const Syntax::Node* n );
         static inline bool isLeafNode( const Syntax::Node* n );
-        static inline QString cocoNodeName( QString name );
+        static bool checkSkipFromAst( const Syntax::Definition* d );
+        static void findAllUsedProductions(Syntax* syn, Syntax::Node* node, Selection& selection );
+        static inline QString nodeName( QString name );
+    protected:
         static inline QString cocoTokenDef( quint8 t );
-        void findAllUsedProductions( Syntax::Node* node, Selection& selection );
         void writeNode( QTextStream& out, Syntax::Node* node, bool topLevel, bool buildAst );
         void writeAttr( QTextStream& out, Syntax::Node* node);
         void writeAttrNode( QTextStream& out, Syntax::Node* node, int ll );
