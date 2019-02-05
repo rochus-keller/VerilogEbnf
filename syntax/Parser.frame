@@ -85,7 +85,14 @@ public:
 	
 	int peek( quint8 la = 1 );
 
--->declarations
+    void RunParser()
+    {
+        d_stack.push(&d_root);
+        Parse();
+        d_stack.pop();
+    }
+  
+  -->declarations
 
 	Parser(Vl::PpLexer *scanner,Vl::Errors*);
 	~Parser();
