@@ -542,7 +542,7 @@ static Syntax::Node* parseTerm( SynContext& ctx )
     }
 
     if( node )
-        node->d_attr = attr;
+        node->d_attr = attr; // node ist eine Sequence!
     return node;
 }
 

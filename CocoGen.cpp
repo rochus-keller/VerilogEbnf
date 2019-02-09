@@ -368,6 +368,7 @@ void CocoGen::writeAttr( QTextStream& out, Syntax::Node* node )
     if( node->d_attr.isEmpty() )
         return;
 
+    // node ist eine Sequence!
     if( node->d_attr.startsWith("LL:") )
     {
         const int ll = node->d_attr.mid(3).toInt();

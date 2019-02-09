@@ -92,7 +92,7 @@ public:
         d_stack.pop();
     }
   
-  -->declarations
+	-->declarations
 
 	Parser(Vl::PpLexer *scanner,Vl::Errors*);
 	~Parser();
