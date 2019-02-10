@@ -372,7 +372,7 @@ a[href^="#"]{text-decoration:none}</style>
 <dt><a name="event_control">event_control</a>&nbsp;:</dt>
 <dd><b>@</b> ( <b>(</b> ( <a href="#event_expression">event_expression</a> | <b>*</b> ) <b>)</b> | <b>*</b> | <em><a href="#hierarchical_event_identifier">hierarchical_event_identifier</a></em> ) </dd><br>
 <dt><a name="event_trigger">event_trigger</a>&nbsp;:</dt>
-<dd><b>-</b> <b>></b> <a href="#hierarchical_identifier_range">hierarchical_identifier_range</a> <b>;</b> </dd><br>
+<dd><b>-></b> <a href="#hierarchical_identifier_range">hierarchical_identifier_range</a> <b>;</b> </dd><br>
 <dt><a name="event_expression">event_expression</a>&nbsp;:</dt>
 <dd><a href="#expression">expression</a> <em><a href="#event_expression_nlr">event_expression_nlr</a></em> <br>   | <b>posedge</b> <a href="#expression">expression</a> <em><a href="#event_expression_nlr">event_expression_nlr</a></em> <br>   | <b>negedge</b> <a href="#expression">expression</a> <em><a href="#event_expression_nlr">event_expression_nlr</a></em> </dd><br>
 <dt><em><a name="event_expression_nlr">event_expression_nlr</a></em>&nbsp;:</dt>
@@ -496,9 +496,9 @@ a[href^="#"]{text-decoration:none}</style>
 <dt><em><a name="timing_check_limit">timing_check_limit</a></em>&nbsp;:</dt>
 <dd><a href="#expression">expression</a> </dd><br>
 <dt><a name="timing_check_event">timing_check_event</a>&nbsp;:</dt>
-<dd>[ <em><a href="#timing_check_event_control">timing_check_event_control</a></em> ] <em><a href="#specify_terminal_descriptor">specify_terminal_descriptor</a></em> [ <b>&&</b> <b>&</b> <em><a href="#timing_check_condition">timing_check_condition</a></em> ] </dd><br>
+<dd>[ <em><a href="#timing_check_event_control">timing_check_event_control</a></em> ] <em><a href="#specify_terminal_descriptor">specify_terminal_descriptor</a></em> [ <b>&&&</b> <em><a href="#timing_check_condition">timing_check_condition</a></em> ] </dd><br>
 <dt><a name="controlled_timing_check_event">controlled_timing_check_event</a>&nbsp;:</dt>
-<dd><em><a href="#timing_check_event_control">timing_check_event_control</a></em> <em><a href="#specify_terminal_descriptor">specify_terminal_descriptor</a></em> [ <b>&&</b> <b>&</b> <em><a href="#timing_check_condition">timing_check_condition</a></em> ] </dd><br>
+<dd><em><a href="#timing_check_event_control">timing_check_event_control</a></em> <em><a href="#specify_terminal_descriptor">specify_terminal_descriptor</a></em> [ <b>&&&</b> <em><a href="#timing_check_condition">timing_check_condition</a></em> ] </dd><br>
 <dt><em><a name="timing_check_event_control">timing_check_event_control</a></em>&nbsp;:</dt>
 <dd><b>posedge</b> <br>   | <b>negedge</b> <br>   | <a href="#edge_control_specifier">edge_control_specifier</a> </dd><br>
 <dt><a name="specify_input_or_output_terminal_descriptor">specify_input_or_output_terminal_descriptor</a>&nbsp;:</dt>

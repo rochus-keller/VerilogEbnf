@@ -84,10 +84,16 @@ public:
                 else
                     return token( Terminal, Tok_Plus );
             case '-':
-                if( lookAhead(1) == ':' )
+                switch( lookAhead(1) )
+                {
+                case ':':
                     return token( Terminal, Tok_MinusColon, 2 );
-                else
+                case '>':
+                    return token( Terminal, Tok_MinusGt, 2 );
+                default:
                     return token( Terminal, Tok_Minus );
+                }
+                break;
             case '!':
                 if( lookAhead(1) == ']' )
                     return token( RPar, Tok_Invalid, 2 );
@@ -135,8 +141,12 @@ public:
                     return token( Terminal, Tok_Eq );
             case '&':
                 if( lookAhead(1) == '&' )
-                    return token( Terminal, Tok_2Amp, 2 );
-                else
+                {
+                    if( lookAhead(2) == '&' )
+                        return token( Terminal, Tok_3Amp, 3 );
+                    else
+                        return token( Terminal, Tok_2Amp, 2 );
+                }else
                     return token( Terminal, Tok_Amp );
             case '*':
                 switch( lookAhead(1) )
