@@ -1,3 +1,5 @@
+NOTE: VerilogEbnf was replaced by EbnfStudio, see https://github.com/rochus-keller/EbnfStudio.
+
 This project includes an LL(1) Verilog 2005 EBNF syntax as well as the tool which helped to analyze and gradually modify original syntax given in IEEE 1364-2005 and to generate the input files for the parser generators. 
 
 ![alt text](http://software.rochus-keller.info/VerilogEbnf_screenshot.png "VerilogEbnf Screenshot")
